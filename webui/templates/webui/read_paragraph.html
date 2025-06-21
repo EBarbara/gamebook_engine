@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ book.title }} - Parágrafo {{ paragraph.number }}</title>
+    <link href="{% static 'css/dist/styles.css' %}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-8">
+    <h1 class="text-2xl font-bold mb-4">{{ book.title }} - Parágrafo {{ paragraph.number }}</h1>
+
+    <div class="bg-white p-4 rounded shadow">
+        <p class="text-lg mb-4 whitespace-pre-wrap">{{ paragraph.text|safe }}</p>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'gamebook-list' %}" class="text-gray-600 hover:underline">← Voltar para lista de livros</a>
+    </div>
+</body>
+</html>
