@@ -1,5 +1,8 @@
-Django~=5.2.3
+Django~=5.2.1
 django-stubs[compatible-mypy]~=5.2.1
+django-tailwind[reload]~=4.0.1
 djangorestframework~=3.16.0
+djangorestframework-stubs[compatible-mypy]~=3.16.0
+drf-nested-routers~=0.94.2
 drf-spectacular~=0.28.0
-mypy~=1.16.1
+mypy~=1.15.0

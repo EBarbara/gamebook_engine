@@ -32,6 +32,7 @@ ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1"]
 
 INSTALLED_APPS = [
     'gamebooks.apps.GamebooksConfig',
+    'webui.apps.WebuiConfig',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'tailwind',
     'rest_framework',
     'drf_spectacular',
 ]
@@ -142,3 +144,6 @@ SPECTACULAR_SETTINGS = {
     'POSTPROCESSING_HOOKS': [],
     'COMPONENT_NO_READ_ONLY_REQUIRED': True,
 }
+
+TAILWIND_APP_NAME = "webui"
+NPM_BIN_PATH = "C:\\nvm4w\\nodejs\\npm.cmd"
