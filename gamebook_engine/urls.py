@@ -15,10 +15,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from gamebooks.api import api as gamebook_api
+from django.urls import path, include
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
+from gamebooks.urls import router
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', gamebook_api.urls),
+    path('api/', include(router.urls)),
+    # DRF Spectacular routes
+    path('api/schema', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger'),
 ]

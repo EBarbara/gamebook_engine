@@ -1,2 +1,5 @@
 Django~=5.2.3
+django-stubs[compatible-mypy]~=5.2.1
 djangorestframework~=3.16.0
+drf-spectacular~=0.28.0
+mypy~=1.16.1

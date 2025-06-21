@@ -173,6 +173,7 @@ cython_debug/
 .idea/misc.xml
 .idea/modules.xml
 .idea/MypyPlugin.xml
+.idea/mypy.xml
 .idea/vcs.xml
 .idea/workspace.xml
 
