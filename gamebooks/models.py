@@ -1,3 +1,4 @@
+# gamebooks/models.py
 from django.db import models
 
 class Gamebook (models.Model):
