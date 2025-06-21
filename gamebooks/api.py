@@ -1,6 +1,5 @@
 import random
 
-from django.db.models import Choices
 from ninja import NinjaAPI
 
 from .models import Gamebook, Paragraph, Choice
@@ -16,8 +15,8 @@ def list_gamebooks(request):
 def get_paragraph(request, book_code:str, number:int):
     try:
         book = Gamebook.objects.get(code=book_code)
-        paragraph = Paragraph.objects.get(gamebook=book, number=number)
-        choices = list(Choice.objects.filter(paragraph=paragraph))
+        paragraph = book.paragraphs.get(number=number)
+        choices = list(paragraph.choices.values('text', 'target'))
 
         return {
             "text": paragraph.text,

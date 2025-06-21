@@ -1,2 +1,4 @@
 Django~=5.2.3
 django-ninja~=1.4.3
+django-stubs[compatible-mypy]~=5.2.1
+mypy~=1.16.1

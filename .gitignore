@@ -172,7 +172,9 @@ cython_debug/
 .idea/gamebook_engine.iml
 .idea/misc.xml
 .idea/modules.xml
+.idea/MypyPlugin.xml
 .idea/vcs.xml
+.idea/workspace.xml
 
 # Abstra
 # Abstra is an AI-powered process automation framework.
@@ -186,6 +188,8 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file. However, if you prefer, 
 #  you could uncomment the following to ignore the enitre vscode folder
 # .vscode/
+.vscode/settings.json
+.vscode/tasks.json
 
 # Ruff stuff:
 .ruff_cache/
