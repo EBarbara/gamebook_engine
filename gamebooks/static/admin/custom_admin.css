@@ -1,0 +1,8 @@
+.ck-editor__editable {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    padding: 1rem;
+    min-height: 300px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}

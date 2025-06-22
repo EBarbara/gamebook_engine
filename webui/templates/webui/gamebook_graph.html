@@ -1,0 +1,44 @@
+{% load static %}
+{% load gamebook_filters %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Grafo de Navegação - {{ book.title }}</title>
+    <link href="{% static 'css/dist/styles.css' %}" rel="stylesheet">
+</head>
+<body class="p-6 font-sans">
+
+<h1 class="text-2xl font-bold mb-4">Grafo de Navegação: {{ book.title }}</h1>
+
+<h2 class="text-xl font-semibold mt-4">Parágrafos e Destinos:</h2>
+<ul class="space-y-2">
+    {% for node in graph.nodes %}
+        <li class="p-2 border rounded
+            {% if node in graph.dead_ends %} bg-red-100 {% endif %}
+            {% if node in graph.orphans %} bg-yellow-100 {% endif %}
+        ">
+            <strong>Parágrafo {{ node }}</strong> →
+            Destinos:
+            {% if graph.edges|get_item:node %}
+                {{ graph.edges|get_item:node|join:", " }}
+            {% else %}
+                Nenhum
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+
+<h2 class="text-xl font-semibold mt-6">Parágrafos Referenciados mas Não Criados:</h2>
+{% if graph.missing_targets %}
+    <ul class="list-disc ml-6">
+        {% for missing in graph.missing_targets %}
+            <li>{{ missing }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Nenhuma referência quebrada encontrada.</p>
+{% endif %}
+
+</body>
+</html>

@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_ckeditor_5',
     'tailwind',
     'rest_framework',
     'drf_spectacular',
@@ -120,8 +121,14 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'gamebooks/static')
+
+# Media files (image uploads, etc)
+# https://docs.djangoproject.com/en/5.2/topics/files/
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -146,4 +153,12 @@ SPECTACULAR_SETTINGS = {
 }
 
 TAILWIND_APP_NAME = "webui"
-NPM_BIN_PATH = "C:\\nvm4w\\nodejs\\npm.cmd"
+NPM_BIN_PATH = "C:/nvm4w/nodejs/npm.cmd"
+
+# django-ckeditor-5 config
+CKEDITOR_5_UPLOAD_FILE_TYPES = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "pdf"]
+CKEDITOR_5_CONFIGS = {
+    "default": {
+        "toolbar": ["heading", "|", "bold", "italic", "link", "bulletedList", "numberedList", "|", "undo", "redo"],
+    },
+}

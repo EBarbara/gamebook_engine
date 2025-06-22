@@ -1,9 +1,13 @@
 # gamebooks/views.py
 from django.shortcuts import get_object_or_404
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from .models import Gamebook, Paragraph
 from .serializers import ParagraphSerializer, GamebookListSerializer, GamebookDetailsSerializer
+from .utils import build_paragraph_graph
 
 
 class GamebookViewSet(ModelViewSet):
@@ -29,3 +33,9 @@ class ParagraphViewSet(ModelViewSet):
         book_code = self.kwargs.get('gamebook_code')
         book = get_object_or_404(Gamebook, code=book_code)
         serializer.save(gamebook=book)
+
+@api_view(['GET'])
+def gamebook_graph(request, code):
+    book = get_object_or_404(Gamebook, code=code)
+    graph = build_paragraph_graph(book)
+    return Response(graph, status=status.HTTP_200_OK)

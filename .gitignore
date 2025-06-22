@@ -167,6 +167,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 .idea/.gitignore
+.idea/dataSources.xml
+.idea/dictionaries
 .idea/gamebook_engine.iml
 .idea/inspectionProfiles/profiles_settings.xml
 .idea/inspectionProfiles/Project_Default.xml
@@ -174,7 +176,7 @@ cython_debug/
 .idea/modules.xml
 .idea/MypyPlugin.xml
 .idea/mypy.xml
-.idea/dictionaries
+.idea/sqldialects.xml
 .idea/vcs.xml
 .idea/workspace.xml
 
