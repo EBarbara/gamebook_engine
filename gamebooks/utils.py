@@ -38,3 +38,38 @@ def build_paragraph_graph(gamebook):
         "orphans": sorted(orphans),
         "missing_targets": missing_targets,
     }
+
+def graph_to_dot(graph):
+    lines = ["digraph G {"]
+
+    # Definição de estilos por categoria
+    dead_end_style = 'shape=box style=filled fillcolor="#FFDDDD"'  # Dead ends = caixa vermelha clara
+    orphan_style = 'shape=ellipse style=filled fillcolor="#FFFFAA"'  # Orphans = oval amarelo claro
+    missing_style = 'shape=diamond style=filled fillcolor="#CCCCCC"'  # Not yet written = losango cinza claro
+    normal_style = 'shape=circle style=filled fillcolor="#DDFFDD"'  # Normal = verde claro (ajustável)
+
+    # Primeiro, define os nós já existentes
+    for node in graph["nodes"]:
+        if node in graph["dead_ends"]:
+            style = dead_end_style
+        elif node in graph["orphans"]:
+            style = orphan_style
+        else:
+            style = normal_style
+
+        lines.append(f'  {node} [{style} label="{node}"];')
+
+    # Agora os nós "missing_targets" (referenciados mas não existentes ainda)
+    for missing in graph["missing_targets"]:
+        lines.append(f'  missing_{missing} [{missing_style} label="{missing}"];')
+
+    # Agora, as arestas
+    for src, targets in graph["edges"].items():
+        for tgt in targets:
+            if tgt in graph["nodes"]:
+                lines.append(f'  {src} -> {tgt};')
+            else:
+                lines.append(f'  {src} -> missing_{tgt};')
+
+    lines.append("}")
+    return "\n".join(lines).strip()

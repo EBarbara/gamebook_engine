@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 
 from gamebooks.models import Gamebook, Paragraph
-from gamebooks.utils import build_paragraph_graph
+from gamebooks.utils import build_paragraph_graph, graph_to_dot
 
 
 def gamebook_list(request):
@@ -16,4 +16,5 @@ def read_paragraph(request, code, number):
 def gamebook_graph_view(request, code):
     book = get_object_or_404(Gamebook, code=code)
     graph = build_paragraph_graph(book)
-    return render(request, 'webui/gamebook_graph.html', {'book': book, 'graph': graph})
+    dot_data = graph_to_dot(graph)
+    return render(request, 'webui/gamebook_graph.html', {'book': book, 'graph': graph, 'dot': dot_data})
