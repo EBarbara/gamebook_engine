@@ -1,14 +1,15 @@
 # gamebooks/views.py
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from .models import Gamebook, Paragraph
-from .serializers import ParagraphSerializer, GamebookListSerializer, GamebookDetailsSerializer
+from .models import Gamebook, Paragraph, ReadingSession
+from .serializers import (
+    ParagraphSerializer, GamebookListSerializer, GamebookDetailsSerializer, ReadingSessionSerializer
+)
 from .utils import build_paragraph_graph
-
 
 class GamebookViewSet(ModelViewSet):
     queryset = Gamebook.objects.all()
@@ -18,7 +19,6 @@ class GamebookViewSet(ModelViewSet):
         if self.action == 'list':
             return GamebookListSerializer
         return GamebookDetailsSerializer
-
 
 class ParagraphViewSet(ModelViewSet):
     serializer_class = ParagraphSerializer
@@ -33,6 +33,10 @@ class ParagraphViewSet(ModelViewSet):
         book_code = self.kwargs.get('gamebook_code')
         book = get_object_or_404(Gamebook, code=book_code)
         serializer.save(gamebook=book)
+
+class ReadingSessionViewSet(ModelViewSet):
+    queryset = ReadingSession.objects.all()
+    serializer_class = ReadingSessionSerializer
 
 @api_view(['GET'])
 def gamebook_graph(request, code):

@@ -2,10 +2,11 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from rest_framework_nested.routers import NestedDefaultRouter
 
-from .views import GamebookViewSet, ParagraphViewSet, gamebook_graph
+from .views import GamebookViewSet, ParagraphViewSet, gamebook_graph, ReadingSessionViewSet
 
 router = DefaultRouter()
 router.register('gamebooks', GamebookViewSet, basename='gamebooks')
+router.register('reading-sessions', ReadingSessionViewSet, basename='reading-session')
 
 paragraphs_router = NestedDefaultRouter(router, 'gamebooks', lookup='gamebook')
 paragraphs_router.register('paragraphs', ParagraphViewSet, basename='gamebook-paragraphs')

@@ -1,0 +1,55 @@
+{% load static %}
+{% load gamebook_filters %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Leitura - Sessão {{ session.id }}</title>
+    <link href="{% static 'css/dist/styles.css' %}" rel="stylesheet">
+</head>
+<body class="p-6 font-sans">
+    <h1 class="text-2xl font-bold mb-4" id="title-book">Leitura do Livro</h1>
+
+    <div id="paragraph-text" class="prose mb-6"></div>
+    <div id="nav-buttons" class="space-y-2"></div>
+
+    <script>
+        const sessionId = "{{ session.id }}";
+        const apiBase = `/api/reading-sessions/${sessionId}/`;
+
+        async function loadSession() {
+            try {
+                const resp = await fetch(apiBase);
+                const session = await resp.json();
+
+                if (session.current_paragraph_number == null) {
+                    document.getElementById('paragraph-text').innerText = "Sessão sem parágrafo atual.";
+                    return;
+                }
+
+                const paragraphResp = await fetch(`/api/gamebooks/${session.book}/paragraphs/${session.current_paragraph_number}/`);
+                const paragraph = await paragraphResp.json();
+
+                document.getElementById('paragraph-text').innerHTML = paragraph.rendered_text;
+
+            } catch (error) {
+                console.error("Erro ao carregar a sessão:", error);
+                document.getElementById('paragraph-text').innerText = "Erro ao carregar o parágrafo.";
+            }
+        }
+
+        async function gotoParagraph(targetNumber) {
+            await fetch(apiBase, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ current_paragraph: targetNumber })
+            });
+            await loadSession();
+        }
+
+        // Carregar ao abrir
+        loadSession().catch(console.error);
+    </script>
+
+</body>
+</html>
