@@ -4,6 +4,11 @@ from gamebooks.models import Gamebook, Paragraph, ReadingSession
 from gamebooks.utils import build_paragraph_graph, graph_to_dot
 
 
+def home(request):
+    books = Gamebook.objects.all()
+    sessions = ReadingSession.objects.order_by('-created_at')[:5]  # últimas sessões, por exemplo
+    return render(request, 'webui/home.html', {'books': books, 'sessions': sessions})
+
 def gamebook_list(request):
     books = Gamebook.objects.all()
     return render(request, 'webui/gamebook_list.html', {'books': books})
