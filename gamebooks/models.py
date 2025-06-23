@@ -14,9 +14,7 @@ class Paragraph (models.Model):
     gamebook = models.ForeignKey(Gamebook, on_delete=models.CASCADE, related_name='paragraphs')
     number = models.IntegerField()
     text = CKEditor5Field("Texto do Parágrafo", config_name="default")
-    combat_enemy = models.CharField(max_length=100, null=True, blank=True)
-    combat_skill = models.IntegerField(null=True, blank=True)
-    combat_stamina = models.IntegerField(null=True, blank=True)
+    events = models.JSONField(default=list, blank=True)
 
     class Meta:
         unique_together = ('gamebook', 'number')
@@ -34,3 +32,12 @@ class ReadingSession (models.Model):
 
     def __str__(self):
         return f"Session for {self.book.title} at paragraph {self.current_paragraph.number if self.current_paragraph else 'None'}"
+
+class ReadingSessionState(models.Model):
+    session = models.ForeignKey(ReadingSession, on_delete=models.CASCADE, related_name='state_snapshots')
+    created_at = models.DateTimeField(auto_now_add=True)
+    paragraph_number = models.IntegerField()
+    state = models.JSONField(default=dict)
+
+    class Meta:
+        ordering = ['created_at']

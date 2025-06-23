@@ -75,21 +75,15 @@
     }
 
     async function goBack() {
-        if (session.history.length > 1) {
-            const previous = session.history[session.history.length - 2];
-            await fetch(apiBase, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken
-                },
-                body: JSON.stringify({
-                    current_paragraph: previous,
-                    pop_history: true
-                })
-            });
-            loadSession();
-        }
+        await fetch(apiBase, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ pop_history: true })
+        });
+        loadSession();
     }
 
     loadSession();

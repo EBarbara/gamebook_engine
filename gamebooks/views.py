@@ -5,7 +5,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from .models import Gamebook, Paragraph, ReadingSession
+from .events import process_paragraph_events
+from .models import Gamebook, Paragraph, ReadingSession, ReadingSessionState
 from .serializers import (
     ParagraphSerializer, GamebookListSerializer, GamebookDetailsSerializer, ReadingSessionSerializer
 )
@@ -40,29 +41,45 @@ class ReadingSessionViewSet(ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
-        new_paragraph_number = request.data.get('current_paragraph')
-        pop_history = request.data.get('pop_history', False)
+        data = request.data
+
+        new_paragraph_number = data.get('current_paragraph')
+        pop_history = data.get('pop_history', False)
 
         if new_paragraph_number is not None:
             try:
-                # Busca o Paragraph certo com base no book da sessão + número
-                paragraph = Paragraph.objects.get(gamebook=instance.book, number=new_paragraph_number)
+                new_paragraph = Paragraph.objects.get(
+                    gamebook=instance.book,
+                    number=new_paragraph_number
+                )
             except Paragraph.DoesNotExist:
                 return Response(
                     {"detail": f"Parágrafo número {new_paragraph_number} não encontrado para este livro."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Atualiza o histórico
             if pop_history:
-                # Remove o último registro do histórico
+                last_snapshot = instance.state_snapshots.last()
+                if last_snapshot:
+                    instance.state = last_snapshot.state
+                    last_snapshot.delete()
                 if instance.history:
                     instance.history.pop()
-            elif instance.current_paragraph:
+            else:
+                ReadingSessionState.objects.create(
+                    session=instance,
+                    paragraph_number=instance.current_paragraph or -1,
+                    state=instance.state.copy() if instance.state else {}
+                )
                 instance.history.append(instance.current_paragraph.number)
 
-            instance.current_paragraph = paragraph
+            # Atualiza o parágrafo
+            instance.current_paragraph = new_paragraph_number
+            instance.history.append(new_paragraph_number)
             instance.save()
+
+            # Processa os eventos do novo parágrafo
+            process_paragraph_events(instance, new_paragraph)
 
         serializer = self.get_serializer(instance)
         return Response(serializer.data, status=status.HTTP_200_OK)
