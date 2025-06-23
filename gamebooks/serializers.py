@@ -1,5 +1,5 @@
 # gamebooks/serializers.py
-from rest_framework.fields import IntegerField, SerializerMethodField
+from rest_framework.fields import IntegerField, SerializerMethodField, CharField
 from rest_framework.serializers import ModelSerializer
 
 from .models import Gamebook, Paragraph, ReadingSession
@@ -30,12 +30,14 @@ class GamebookListSerializer(ModelSerializer):
 
 class ReadingSessionSerializer(ModelSerializer):
     current_paragraph_number = IntegerField(source='current_paragraph.number', read_only=True)
+    book_title = CharField(source='book__title', read_only=True)
 
     class Meta:
         model = ReadingSession
         fields = [
             'id',
             'book',
+            'book_title',
             'current_paragraph',
             'current_paragraph_number',
             'history',
