@@ -38,6 +38,18 @@ class ReadingSessionViewSet(ModelViewSet):
     queryset = ReadingSession.objects.all()
     serializer_class = ReadingSessionSerializer
 
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        new_paragraph = request.data.get('current_paragraph')
+        if new_paragraph is not None:
+            instance.current_paragraph = new_paragraph
+            instance.history.append(new_paragraph)
+            instance.save()
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 @api_view(['GET'])
 def gamebook_graph(request, code):
     book = get_object_or_404(Gamebook, code=code)

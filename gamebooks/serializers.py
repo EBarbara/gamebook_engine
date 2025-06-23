@@ -33,4 +33,13 @@ class ReadingSessionSerializer(ModelSerializer):
 
     class Meta:
         model = ReadingSession
-        fields = ['id', 'book', 'current_paragraph', 'current_paragraph_number', 'created_at', 'updated_at', 'state']
+        fields = [
+            'id',
+            'book',
+            'current_paragraph',
+            'current_paragraph_number',
+            'history',
+            'state',
+            'created_at',
+            'updated_at',
+        ]
