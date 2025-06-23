@@ -34,7 +34,7 @@ def start_reading_session(request, code):
         state={}
     )
 
-    return redirect('webui-read-session', session_id=session.id)
+    return redirect('read-session', session_id=session.id)
 
 def read_session(request, session_id):
     session = get_object_or_404(ReadingSession, id=session_id)
@@ -50,4 +50,4 @@ def session_goto_paragraph(request, session_id, target_paragraph_number):
     target = get_object_or_404(Paragraph, book=session.book, number=target_paragraph_number)
     session.current_paragraph = target
     session.save()
-    return redirect('webui-read-session', session_id=session.id)
+    return redirect('read-session', session_id=session.id)

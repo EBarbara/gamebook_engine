@@ -12,5 +12,9 @@ urlpatterns = [
     path('gamebooks/<slug:code>/graph-view/', gamebook_graph_view, name='gamebook-graph'),
     path('gamebooks/<slug:code>/start-session/', start_reading_session, name='start-reading-session'),
     path('gamebooks/sessions/<int:session_id>/', read_session, name='read-session'),
-    path('gamebooks/sessions/<int:session_id>/goto/<int:target_paragraph_number>/', session_goto_paragraph, name='webui-session-goto'),
+    path(
+        'gamebooks/sessions/<int:session_id>/goto/<int:target_paragraph_number>/',
+        session_goto_paragraph,
+        name='session-goto'
+    ),
 ]
