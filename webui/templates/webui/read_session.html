@@ -83,7 +83,10 @@
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrftoken
                 },
-                body: JSON.stringify({ current_paragraph: previous })
+                body: JSON.stringify({
+                    current_paragraph: previous,
+                    pop_history: true
+                })
             });
             loadSession();
         }

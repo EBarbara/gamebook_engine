@@ -41,6 +41,7 @@ class ReadingSessionViewSet(ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
         new_paragraph_number = request.data.get('current_paragraph')
+        pop_history = request.data.get('pop_history', False)
 
         if new_paragraph_number is not None:
             try:
@@ -53,7 +54,11 @@ class ReadingSessionViewSet(ModelViewSet):
                 )
 
             # Atualiza o histórico
-            if instance.current_paragraph:
+            if pop_history:
+                # Remove o último registro do histórico
+                if instance.history:
+                    instance.history.pop()
+            elif instance.current_paragraph:
                 instance.history.append(instance.current_paragraph.number)
 
             instance.current_paragraph = paragraph
