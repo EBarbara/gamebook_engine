@@ -1,49 +1,36 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Gamebook Engine - Início</title>
-    <link href="{% static 'css/dist/styles.css' %}" rel="stylesheet">
-</head>
-<body class="p-6 font-sans bg-gray-50 text-gray-800">
+{% extends "base.html" %}
 
-<h1 class="text-3xl font-bold mb-6 text-indigo-700">📚 Gamebook Engine</h1>
+{% block title %}Início - Gamebook Engine{% endblock %}
 
-<section class="mb-8">
-    <h2 class="text-xl font-semibold mb-2">Livros Disponíveis:</h2>
-    <ul class="list-disc list-inside">
-        {% for book in books %}
-            <li>
-                <a href="{% url 'gamebook-graph' code=book.code %}" class="text-blue-600 hover:underline">
-                    {{ book.title }}
-                </a>
-                –
-                <a href="{% url 'start-reading-session' code=book.code %}" class="text-green-600 hover:underline">
-                    Iniciar leitura
-                </a>
-            </li>
-        {% empty %}
-            <li>Nenhum livro cadastrado ainda.</li>
-        {% endfor %}
-    </ul>
-</section>
+{% block content %}
+<h2 class="text-xl font-semibold mb-6 text-indigo-700">Livros Disponíveis:</h2>
+<ul class="list-disc list-inside mb-8">
+    {% for book in books %}
+        <li class="mb-2">
+            <a href="{% url 'gamebook-graph' code=book.code %}" class="text-blue-600 hover:underline font-medium">
+                {{ book.title }}
+            </a>
+            –
+            <a href="{% url 'start-reading-session' code=book.code %}" class="text-green-600 hover:underline font-semibold">
+                Iniciar leitura
+            </a>
+        </li>
+    {% empty %}
+        <li>Nenhum livro cadastrado ainda.</li>
+    {% endfor %}
+</ul>
 
-<section>
-    <h2 class="text-xl font-semibold mb-2">Últimas Sessões de Leitura:</h2>
-    <ul class="list-disc list-inside">
-        {% for session in sessions %}
-            <li>
-                Sessão #{{ session.id }} – Livro: {{ session.book.title }} –
-                <a href="{% url 'read-session' session.id %}" class="text-blue-600 hover:underline">
-                    Retomar
-                </a>
-            </li>
-        {% empty %}
-            <li>Nenhuma sessão ainda.</li>
-        {% endfor %}
-    </ul>
-</section>
-
-</body>
-</html>
+<h2 class="text-xl font-semibold mb-4 text-indigo-700">Últimas Sessões de Leitura:</h2>
+<ul class="list-disc list-inside">
+    {% for session in sessions %}
+        <li class="mb-2">
+            Sessão #{{ session.id }} – Livro: {{ session.book.title }} –
+            <a href="{% url 'read-session' session.id %}" class="text-blue-600 hover:underline font-medium">
+                Retomar
+            </a>
+        </li>
+    {% empty %}
+        <li>Nenhuma sessão ainda.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

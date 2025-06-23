@@ -1,22 +1,21 @@
+{% extends "base.html" %}
 {% load static %}
 {% load gamebook_filters %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Grafo de Navegação - {{ book.title }}</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/viz.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/full.render.js"></script>
-    <link href="{% static 'css/dist/styles.css' %}" rel="stylesheet">
-</head>
-<body class="p-6 font-sans">
 
-<h1 class="text-2xl font-bold mb-4">Grafo de Navegação: {{ book.title }}</h1>
+{% block title %}Grafo de Navegação - {{ book.title }}{% endblock %}
 
-<div id="graph" class="border p-4 my-4"></div>
+{% block content %}
+<h2 class="text-2xl font-semibold mb-4">Grafo de Navegação: {{ book.title }}</h2>
+
+<div id="graph" class="border p-4 my-4 bg-white rounded shadow overflow-x-auto"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/viz.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/full.render.js"></script>
 
 <script>
-    const dot = `{{ dot|escapejs }}`;
+    const dot = `
+{{ dot|escapejs }}
+    `;
 
     const viz = new Viz();
 
@@ -29,6 +28,4 @@
             console.error(error);
         });
 </script>
-
-</body>
-</html>
+{% endblock %}

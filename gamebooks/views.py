@@ -40,11 +40,23 @@ class ReadingSessionViewSet(ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
+        new_paragraph_number = request.data.get('current_paragraph')
 
-        new_paragraph = request.data.get('current_paragraph')
-        if new_paragraph is not None:
-            instance.current_paragraph = new_paragraph
-            instance.history.append(new_paragraph)
+        if new_paragraph_number is not None:
+            try:
+                # Busca o Paragraph certo com base no book da sessão + número
+                paragraph = Paragraph.objects.get(gamebook=instance.book, number=new_paragraph_number)
+            except Paragraph.DoesNotExist:
+                return Response(
+                    {"detail": f"Parágrafo número {new_paragraph_number} não encontrado para este livro."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Atualiza o histórico
+            if instance.current_paragraph:
+                instance.history.append(instance.current_paragraph.number)
+
+            instance.current_paragraph = paragraph
             instance.save()
 
         serializer = self.get_serializer(instance)

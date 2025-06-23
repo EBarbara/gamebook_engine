@@ -1,84 +1,94 @@
+{% extends "base.html" %}
 {% load static %}
-{% load gamebook_filters %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Leitura - Sessão {{ session.id }}</title>
-    <link href="{% static 'css/dist/styles.css' %}" rel="stylesheet">
-</head>
-<body class="bg-gray-50 text-gray-800 p-6 font-sans">
-    <h1 id="title-book" class="text-3xl font-bold mb-4 text-indigo-700"></h1>
 
-    <div id="paragraph-text" class="prose lg:prose-lg max-w-none mb-8 bg-white p-6 rounded shadow"></div>
-    <div id="history" class="text-sm text-gray-600 italic mb-4"></div>
-    <div id="nav-buttons" class="space-y-2"></div>
+{% block title %}Leitura da Sessão {{ session.id }}{% endblock %}
 
-    <script>
-        const sessionId = "{{ session.id }}";
-        const apiBase = "/api/reading-sessions/" + sessionId + "/";
+{% block content %}
+<h2 class="text-2xl font-semibold mb-4">Sessão de Leitura – Livro: {{ session.book.title }}</h2>
 
-        let session = null;  // Variável global para manter o estado da sessão atual
+<div id="paragraph-number" class="text-sm text-gray-600 mb-2"></div>
+<div id="paragraph-text" class="prose lg:prose-lg max-w-none bg-white p-6 rounded shadow mb-6"></div>
 
-        async function loadSession() {
-            document.getElementById('paragraph-text').innerHTML = "Carregando...";
-            const resp = await fetch(apiBase);
-            session = await resp.json();
+<div id="history" class="text-sm text-gray-600 italic mb-4"></div>
 
-            // Atualizar o título do livro e número do parágrafo
-            document.getElementById('title-book').innerText = `${session.book_title} – Parágrafo ${session.current_paragraph_number ?? '-'}`;
+<div id="nav-buttons" class="space-y-2"></div>
 
-            if (session.current_paragraph_number == null) {
-                document.getElementById('paragraph-text').innerText = "Sessão sem parágrafo atual.";
-                document.getElementById('nav-buttons').innerHTML = "";
-                document.getElementById('history').innerText = "";
-                return;
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
+        }
+        return cookieValue;
+    }
 
-            // Buscar o parágrafo atual
-            const paragraphResp = await fetch(`/api/gamebooks/${session.book}/paragraphs/${session.current_paragraph_number}/`);
-            const paragraph = await paragraphResp.json();
+    const csrftoken = getCookie('csrftoken');
+    const sessionId = "{{ session.id }}";
+    const apiBase = "/api/reading-sessions/" + sessionId + "/";
 
-            // Exibir o texto processado com links
-            document.getElementById('paragraph-text').innerHTML = paragraph.rendered_text;
+    let session = null;
 
-            // Mostrar histórico (breadcrumbs simples)
-            document.getElementById('history').innerText = "Trilha até aqui: " + session.history.join(" → ");
+    async function loadSession() {
+        document.getElementById('paragraph-text').innerHTML = "Carregando...";
+        const resp = await fetch(apiBase);
+        session = await resp.json();
 
-            // Criar botão de "Voltar", se aplicável
-            let buttons = '';
-            if (session.history.length > 1) {
-                buttons += `<button class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded shadow transition" onclick="goBack()">← Voltar ao anterior</button>`;
-            }
-
-            document.getElementById('nav-buttons').innerHTML = buttons;
+        if (session.current_paragraph_number == null) {
+            document.getElementById('paragraph-text').innerText = "Sessão sem parágrafo atual.";
+            document.getElementById('nav-buttons').innerHTML = "";
+            document.getElementById('history').innerText = "";
+            return;
         }
 
-        async function gotoParagraph(targetNumber) {
+        const paragraphResp = await fetch(`/api/gamebooks/${session.book}/paragraphs/${session.current_paragraph_number}/`);
+        const paragraph = await paragraphResp.json();
+
+        document.getElementById('paragraph-text').innerHTML = paragraph.rendered_text;
+        document.getElementById('paragraph-number').innerText = `Parágrafo ${session.current_paragraph_number}`;
+
+        document.getElementById('history').innerText = "Trilha até aqui: " + session.history.join(" → ");
+
+        let buttons = '';
+        if (session.history.length > 1) {
+            buttons += `<button class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded shadow transition" onclick="goBack()">← Voltar ao anterior</button><br>`;
+        }
+        document.getElementById('nav-buttons').innerHTML = buttons;
+    }
+
+    async function gotoParagraph(targetNumber) {
+        await fetch(apiBase, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ current_paragraph: targetNumber })
+        });
+        loadSession();
+    }
+
+    async function goBack() {
+        if (session.history.length > 1) {
+            const previous = session.history[session.history.length - 2];
             await fetch(apiBase, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ current_paragraph: targetNumber })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ current_paragraph: previous })
             });
             loadSession();
         }
+    }
 
-        async function goBack() {
-            if (session.history.length > 1) {
-                const previous = session.history[session.history.length - 2];
-                await fetch(apiBase, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ current_paragraph: previous })
-                });
-                loadSession();
-            }
-        }
-
-        // Carregar sessão ao abrir
-        loadSession();
-    </script>
-
-
-</body>
-</html>
+    loadSession();
+</script>
+{% endblock %}

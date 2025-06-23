@@ -1,8 +1,7 @@
 import re
 
 from django import template
-
-from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -12,13 +11,12 @@ def render_gamebook_links(text, book_code):
     """
     Substitui placeholders do tipo [[paragraph:123]] por links reais.
     """
-
     def replace(match):
-        number = match.group(1)
-        url = reverse('read-paragraph', args=[book_code, number])
-        return f'<a href="{url}">{number}</a>'
+        target = match.group(1)
+        return f'<a href="#" onclick="gotoParagraph({target}); return false;">{target}</a>'
 
-    return re.sub(r'\[\[paragraph:(\d+)\]\]', replace, text) # noinspection PyRedundantEscape
+    result = re.sub(r'\[\[paragraph:(\d+)\]\]', replace, text)
+    return mark_safe(result)
 
 @register.filter
 def get_item(dictionary, key):
